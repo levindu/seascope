@@ -136,8 +136,8 @@ class CtagsThread:
 		out_data_all = []
 		for args in cmd_list:
 			proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-			(out_data, err_data) = proc.communicate('\n'.join(fl))
-			out_data = re.split('\r?\n', out_data)
+			(out_data, err_data) = proc.communicate('\n'.join(fl).encode())
+			out_data = re.split('\r?\n', out_data.decode())
 			out_data_all += out_data
 		return out_data_all
 
@@ -145,8 +145,8 @@ class CtagsThread:
 		cmd = 'ctags -n -u --fields=+K -L - -f -'
 		args = cmd.split()
 		proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-		(out_data, err_data) = proc.communicate('\n'.join(self.file_list))
-		out_data = re.split('\r?\n', out_data)
+		(out_data, err_data) = proc.communicate('\n'.join(self.file_list).encode())
+		out_data = re.split('\r?\n', out_data.decode())
 		out_data += self.runCtagsCustom(self.file_list)
 
 		for line in out_data:

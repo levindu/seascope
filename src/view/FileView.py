@@ -105,7 +105,7 @@ class DirTab(QWidget):
 		self.ted.setText(dirstr)
 		
 	def ted_editingFinished(self):
-		path = str(self.ted.text())
+		path = self.ted.text()
 		if not os.path.isdir(path):
 			path = os.path.dirname(path)
 		if os.path.isdir(path):
@@ -120,7 +120,7 @@ class DirTab(QWidget):
 		fdlg.setDirectory(self.ted.text())
 		if (fdlg.exec_()):
 			browse_dir = fdlg.selectedFiles()[0]
-			self.dir_reset(str(browse_dir))
+			self.dir_reset(browse_dir)
 
 	def reset_btn_cb(self):
 		self.dir_reset(dir_prefix)
@@ -173,7 +173,7 @@ class FileTab(QWidget):
 		self.lview.itemActivated.emit(items[0], 0)
 
 	def lview_itemActivated(self, item):
-		filename = str(item.data(1, Qt.DisplayRole).toString())
+		filename = item.data(1, Qt.DisplayRole)
 		if self.is_rel_path:
 			filename = filename.replace("...", dir_prefix, 1)
 		self.sig_show_file.emit(filename)
@@ -269,7 +269,7 @@ class FileTree(QTabWidget):
 	def open_dir_view(self, filename):
 		d = filename
 		if not os.path.isdir(filename):
-			d = os.path.dirname(str(filename))
+			d = os.path.dirname(filename)
 		self.new_dir_tab_cb(d)
 
 	def close_active_dir_tab_cb(self):

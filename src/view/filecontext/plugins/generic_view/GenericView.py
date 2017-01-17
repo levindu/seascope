@@ -12,7 +12,7 @@ class GenericResItem(QTreeWidgetItem):
 	def __init__(self, li):
 		QTreeWidgetItem.__init__(self, li)
 	def column_val(self, col):
-		return str(self.data(col, Qt.DisplayRole).toString())
+		return self.data(col, Qt.DisplayRole)
 	def line_val(self):
 		return (int(self.column_val(1)))
 
@@ -53,7 +53,7 @@ class GenericFileCmdPage(QWidget):
 
 	def ct_itemActivated(self, item):
 		try:
-			line = int(str(item.data(1, Qt.DisplayRole).toString()))
+			line = int(item.data(1, Qt.DisplayRole))
 		except:
 			return
 		self.sig_goto_line.emit(line)
@@ -73,7 +73,7 @@ class GenericFileCmdPage(QWidget):
 		except Exception as e:
 			res = '%s\n%s' % (' '.join(args), str(e))
 		import re
-		res = [ x.strip() for x in re.split('\r?\n', res.strip()) ]
+		res = [ x.strip() for x in re.split('\r?\n', res.decode().strip()) ]
 		
 		page = GenericFileCmdPage(parent)
 		page.cmd = cmd

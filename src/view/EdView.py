@@ -57,6 +57,20 @@ except ImportError as e:
 import DialogManager
 from .FileContextView import *
 
+class StringArray(array.array):
+	def __new__(cls, code, start=''):
+		if code != 'b' and code != 'c':
+			raise TypeError("StringArray must use 'b' or 'c' typecode")
+		if isinstance(start, str):
+			start = start.encode()
+			return array.array.__new__(cls, 'b', start)
+
+	def fromstring(self,s):
+		return self.frombytes(s.encode())
+
+	def tostring(self):
+		return self.tobytes().decode()
+
 class EditorViewBase(QsciScintilla):
 	def __init__(self, parent=None):
 		QsciScintilla.__init__(self, parent)
@@ -86,15 +100,15 @@ class EditorViewBase(QsciScintilla):
 		print('lpropChanged', prop, val)
 
 	def setProperty(self, name, val):
-		name_buff = array.array('c', name + "\0")
-		val_buff = array.array("c", str(val) + "\0")
+		name_buff = StringArray('c', name + "\0")
+		val_buff = StringArray('c', val + "\0")
 		address_name_buffer = name_buff.buffer_info()[0]
 		address_val_buffer = val_buff.buffer_info()[0]
 		self.SendScintilla(QsciScintillaBase.SCI_SETPROPERTY, address_name_buffer, address_val_buffer)
 
 	def getProperty(self, name):
-		name_buff = array.array('c', name + "\0")
-		val_buff = array.array("c", str(0) + "\0")
+		name_buff = StringArray('c', name + "\0")
+		val_buff = StringArray('c', "0\0")
 		address_name_buffer = name_buff.buffer_info()[0]
 		address_val_buffer = val_buff.buffer_info()[0]
 		self.SendScintilla(QsciScintillaBase.SCI_GETPROPERTY, address_name_buffer, address_val_buffer)
@@ -104,13 +118,14 @@ class EditorViewBase(QsciScintilla):
 		sz = self.SendScintilla(QsciScintillaBase.SCI_PROPERTYNAMES, 0, 0)
 		if not sz:
 			return
-		val_buff = array.array("c", (' ' * sz) + "\0")
+		val_buff = StringArray("c", (' ' * sz) + "\0")
 		address_val_buffer = val_buff.buffer_info()[0]
+		# self.SendScintilla(QsciScintillaBase.SCI_PROPERTYNAMES, 0, address_val_buffer)
 		self.SendScintilla(QsciScintillaBase.SCI_PROPERTYNAMES, 0, address_val_buffer)
 		print('###>')
 		for p in ''.join(val_buff).splitlines():
 			v = self.getProperty(p)
-			print('    %s = %s' % (p, v))
+			print('	   %s = %s' % (p, v))
 
 	def lexer_for_file(self, filename):
 		(prefix, ext) = os.path.splitext(filename)
@@ -339,9 +354,10 @@ class EditorBook(QTabWidget):
 
 	def removeTab(self, inx):
 		ed = self.widget(inx)
-		f = ed.ev.get_filename()
 		QTabWidget.removeTab(self, inx)
-		self.sig_file_closed.emit(f)
+		if ed.ev != None:
+			f = ed.ev.get_filename()
+			self.sig_file_closed.emit(f)
 
 	def clear(self):
 		while self.count() != 0:
@@ -490,7 +506,6 @@ class EditorBook(QTabWidget):
 			if (f):
 				if hist:
 					self.sig_history_update.emit(f, l)
-		filename = str(filename)
 		if (not os.path.exists(filename)):
 			return
 		page = self.search_already_opened_files(filename)

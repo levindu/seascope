@@ -7,7 +7,6 @@
 
 import sys
 import os
-import string
 
 from PyQt4 import QtGui, QtCore, uic
 
@@ -41,8 +40,8 @@ class ProjectOpenDialog(QObject):
 
 	def proj_list_change_cb(self):
 		item = self.dlg.pod_proj_list.selectedItems()[0]
-		proj_dir = str(item.text())
-		self.dlg.pod_proj_name.setText(str(proj_dir))
+		proj_dir = item.text()
+		self.dlg.pod_proj_name.setText(proj_dir)
 		self.path = proj_dir
 
 	def open_btn_cb(self):
@@ -51,10 +50,10 @@ class ProjectOpenDialog(QObject):
 		fdlg.setDirectory(self.dlg.pod_proj_name.text())
 		if (fdlg.exec_()):
 			proj_dir = fdlg.selectedFiles()[0];
-			self.dlg.pod_proj_name.setText(str(proj_dir))
+			self.dlg.pod_proj_name.setText(proj_dir)
 		
 	def ok_btn_cb(self):
-		p = str(self.dlg.pod_proj_name.text()).strip()
+		p = self.dlg.pod_proj_name.text().strip()
 		if (p == ''):
 			self.dlg.setResult(2)
 			return
@@ -188,7 +187,7 @@ class FindDialog:
 			if (ret != QDialog.Accepted):
 				return None
 			text = d.ft_text_inp.currentText()
-			text = str(text).strip()
+			text = text.strip()
 			if (text != ''):
 				break
 		opt = {
@@ -218,13 +217,13 @@ class FilterDialog:
 			if ret != QDialog.Accepted:
 				return None
 			is_regex = self.dlg.fd_regex_chkbox.isChecked()
-			text = str(self.dlg.fd_filter_inp.text())
+			text = self.dlg.fd_filter_inp.text()
 			if is_regex == True:
 				try:
 					import re
 					re.compile(text)
 				except:
-					e = str(sys.exc_info()[1])
+					e = sys.exc_info()[1]
 					lbl = self.dlg.fd_regex_err_lbl
 					lbl.setVisible(True)
 					lbl.setText("<font color='red'>regex: " + e + '</font>')
@@ -235,7 +234,7 @@ class FilterDialog:
 				is_regex,
 				self.dlg.fd_negate_chkbox.isChecked(),
 				self.dlg.fd_icase_chkbox.isChecked(),
-				str(self.dlg.fd_cmd_inp.currentText())
+				self.dlg.fd_cmd_inp.currentText()
 			]
 			return res
 

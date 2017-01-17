@@ -67,8 +67,8 @@ class CtagsInhCache:
 		out_data_all = []
 		for args in cmd_list:
 			proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-			(out_data, err_data) = proc.communicate('\n'.join(fl))
-			out_data = re.split('\r?\n', out_data)
+			(out_data, err_data) = proc.communicate(('\n'.join(fl)).encode())
+			out_data = re.split('\r?\n', out_data.decode())
 			out_data_all += out_data
 		return out_data_all
 
@@ -76,8 +76,8 @@ class CtagsInhCache:
 		cmd = 'ctags -n -u --fields=+i -L - -f -'
 		args = cmd.split()
 		proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-		(out_data, err_data) = proc.communicate('\n'.join(fl))
-		out_data = re.split('\r?\n', out_data)
+		(out_data, err_data) = proc.communicate('\n'.join(fl).encode())
+		out_data = re.split('\r?\n', out_data.decode())
 		out_data += self._runCtagsCustom(fl)
 		return out_data
 
@@ -134,7 +134,7 @@ class ClassGraphGenerator:
 			# output = subprocess.check_output(args, cwd=self.wdir)
 			proc = subprocess.Popen(args, cwd=self.wdir, stdout=subprocess.PIPE)
 			(output, err_data) = proc.communicate()
-			output = re.split('\r?\n', output)
+			output = re.split('\r?\n', output.decode())
 		except Exception as e:
 			print('dir:', self.wdir, ':cmd:', args, ':', e, '\n', file=sys.stderr)
 			sys.exit(-1)
@@ -291,7 +291,8 @@ class ClassGraphGenerator:
 		args = ['dot', '-Tsvg']
 		try:
 			p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-			(svg_data, err_data) = p.communicate(dotInput)
+			(svg_data, err_data) = p.communicate(dotInput.encode())
+			err_data = err_data.decode()
 			if err_data and err_data != '':
 				print(err_data, '\n', file=sys.stderr)
 			#self.saveSvgFile(sym, svg_data)
@@ -316,7 +317,7 @@ if __name__ == '__main__':
 		sys.exit(-1)
 	dname = options.code_dir
 	if not os.path.exists(dname):
-		print('"%s": does not exist' %  dname, file=sys.stderr)
+		print('"%s": does not exist' %	dname, file=sys.stderr)
 		sys.exit(-2)
 	wdir = dname
 	if not os.path.isdir(wdir):
@@ -342,10 +343,10 @@ if __name__ == '__main__':
 	pcmd = None
 	if ptype and os.path.isdir(dname):
 		prj_list = [
-			['idutils', 'ID',        ['lid', '-R', 'grep', '--']                          ],
-			['gtags', 'GRTAGS',      ['global', '-a', '--result=grep', '-x', '-r', '--']  ],
-			['cscope', 'cscope.out', ['cscope', '-L', '-d',  '-0', '--']                  ],
-			['grep',   '',           ['grep', '-R', '-n', '-I', '--',]                    ],
+			['idutils', 'ID',	 ['lid', '-R', 'grep', '--']			      ],
+			['gtags', 'GRTAGS',	 ['global', '-a', '--result=grep', '-x', '-r', '--']  ],
+			['cscope', 'cscope.out', ['cscope', '-L', '-d',	 '-0', '--']		      ],
+			['grep',   '',		 ['grep', '-R', '-n', '-I', '--',]		      ],
 		]
 		for p in prj_list:
 			if p[0] == ptype:

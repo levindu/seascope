@@ -5,7 +5,7 @@
 #
 # License: BSD 
 
-import os, string, re
+import os, re
 
 from ..PluginBase import PluginFeatureBase, ProjectBase, ConfigBase, QueryBase
 from ..PluginBase import PluginProcess
@@ -100,7 +100,7 @@ class ConfigCscope(ConfigBase):
 	def write_seascope_opt(self):
 		config_file = self.get_config_file()
 		cf = open(config_file, 'w')
-		cf.write('c_opt' + '=' + string.join(self.c_opt)+ '\n')
+		cf.write('c_opt' + '=' + ' '.join(self.c_opt) + '\n')
 		cf.close()
 		
 	def read_config(self):

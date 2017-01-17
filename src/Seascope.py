@@ -9,7 +9,6 @@ import sys
 sys.dont_write_bytecode = True
 
 import os
-import string
 
 try:
 	from PyQt4 import QtGui, QtCore
@@ -45,7 +44,7 @@ class BackendChooserDialog(QDialog):
 	def currentRowChanged_cb(self, row):
 		if row == -1:
 			return
-		bname = str(self.backend_lw.currentItem().text())
+		bname = self.backend_lw.currentItem().text()
 		desc = ''
 		for b in self.backend.plugin_list():
 			if b.name() == bname:
@@ -61,7 +60,7 @@ class BackendChooserDialog(QDialog):
 		self.backend_lw.addItems(bi)
 		self.backend_lw.setCurrentRow(0)
 		if self.exec_() == QDialog.Accepted:
-			bname = str(self.backend_lw.currentItem().text())
+			bname = self.backend_lw.currentItem().text()
 			return bname
 		return None
 
@@ -164,8 +163,8 @@ class QueryDialogUi(QDialog):
 
 		self.show()
 		if self.exec_() == QDialog.Accepted:
-			req = str(self.qd_sym_inp.currentText())
-			cmd = str(self.qd_cmd_inp.currentText())
+			req = self.qd_sym_inp.currentText()
+			cmd = self.qd_cmd_inp.currentText()
 			cmd_str = self.feat.cmd_qstr2str[cmd]
 			#self.qd_sym_inp.addItem(req)
 			in_opt = {
@@ -269,7 +268,7 @@ class QueryUi(QObject):
 
 		req = self.editor_current_word()
 		if (req != None):
-			req = str(req).strip()
+			req = req.strip()
 		opt = None
 		if cmd_str not in [ 'QDEF' ]:
 			val = self.qry_ui.show_dlg(cmd_str, req)
@@ -368,7 +367,7 @@ class SeascopeApp(QMainWindow):
 		res = DialogManager.show_preferences_dialog(self.app_style, self.edit_ext_cmd, ev_font, self.exit_dont_ask, self.inner_editing, self.eb_is_show_line)
 		(self.app_style, self.app_font, self.edit_ext_cmd, ev_font, self.exit_dont_ask, self.inner_editing_conf, self.eb_is_show_line) = res
 		if self.edit_ext_cmd != None:
-			self.edit_ext_cmd = str(self.edit_ext_cmd).strip()
+			self.edit_ext_cmd = self.edit_ext_cmd.strip()
 		if (self.edit_ext_cmd == None or self.edit_ext_cmd == ''):
 			self.edit_ext_cmd = 'x-terminal-emulator -e vim %F +%L'
 		self.edit_book.change_ev_font(ev_font.toString())
@@ -402,7 +401,7 @@ class SeascopeApp(QMainWindow):
 		if backend.proj_is_open():
 			self.proj_close_cb()
 		QApplication.quit()
-		os.environ['SEASCOPE_RESTART_HINT'] = '%s' % str(hint)
+		os.environ['SEASCOPE_RESTART_HINT'] = '%s' % hint
 		QProcess.startDetached(sys.executable, QApplication.arguments(), self.seascope_start_dir);
 	def file_restarted_cb(self):
 		try:
@@ -422,7 +421,7 @@ class SeascopeApp(QMainWindow):
 	def codemark_add(self, f, l):
 		self.cm_mgr.append(f, l)
 		self.edit_book.codemark_add(f, l - 1)
-		actionText = QString(f + " : " + str(l))
+		actionText = f + " : " + str(l)
 		act = QAction(actionText, self)
 		self.cm_actionGroup.addAction(act)
 		self.m_cm.addAction(act)
@@ -430,7 +429,7 @@ class SeascopeApp(QMainWindow):
 	def codemark_delete(self, f, l):
 		self.cm_mgr.delete(f, l)
 		self.edit_book.codemark_del(f, l - 1)
-		actionText = QString(f + " : " + str(l))
+		actionText = f + " : " + str(l)
 		actions = self.cm_actionGroup.actions()
 		for act in actions:
 			if actionText == act.text():
@@ -460,7 +459,7 @@ class SeascopeApp(QMainWindow):
 		
 	def codemark_go(self, action):
 		for f, l in self.cm_mgr.codemarks():
-			if action.text() == QString(f + " : " + str(l)):
+			if action.text() == f + " : " + str(l):
 				self.edit_book.show_file_line(f, l)
 	def go_prev_res_cb(self):
 		self.res_book.go_next_res(-1)
@@ -529,7 +528,7 @@ class SeascopeApp(QMainWindow):
 		self.toggle_folds = m_edit.addAction('Toggle folds', self.edit_book.toggle_folds_cb)
 		
 		m_edit.addSeparator()
-                m_edit.addAction('Refresh file', self.edit_book.refresh_file_cb, 'F5')
+		m_edit.addAction('Refresh file', self.edit_book.refresh_file_cb, 'F5')
 		m_edit.addAction('Matching brace', self.edit_book.matching_brace_cb, 'Ctrl+6')
 		m_edit.addAction('Goto line', self.edit_book.goto_line_cb, 'Ctrl+G')
 		m_edit.addAction('External editor', self.external_editor_cb, 'Ctrl+E');
@@ -685,7 +684,7 @@ class SeascopeApp(QMainWindow):
 
 	def app_write_config(self):
 		cf = open(self.app_get_config_file(), 'w')
-		cf.write('recent_projects' + '=' + string.join(self.recent_projects, ',')+ '\n')
+		cf.write('recent_projects' + '=' + ','.join(self.recent_projects) + '\n')
 		if (self.app_style):
 			cf.write('app_style' + '=' + self.app_style + '\n')
 		if (self.app_font):
@@ -724,7 +723,7 @@ class SeascopeApp(QMainWindow):
 	def app_gui_state_write(self, data):
 		f = self.app_gui_state_file()
 		try:
-			with open(f, 'wb') as fp:
+			with open(f, 'w') as fp:
 				import json
 				json.dump(data, fp)
 		except Exception as e:
@@ -816,8 +815,9 @@ class SeascopeApp(QMainWindow):
 			return
 
 		proj_args = ProjectUi.show_settings_ui(bname, None)
+		print("DDD ", bname, ", proj_args = ", proj_args)
 		if not proj_args:
-			return
+                        return
 
 		if not backend.proj_new(bname, proj_args):
 			return
@@ -894,7 +894,6 @@ class SeascopeApp(QMainWindow):
 		if not prj_dir:
 			title = 'Seascope'
 		if fname and fname != '':
-			fname = str(fname)
 			#if fname.startswith(prj_dir):
 				#fname = os.path.relpath(fname, prj_dir)
 			title = title + ' - ' + fname
@@ -936,7 +935,7 @@ class SeascopeApp(QMainWindow):
 				return
 			rquery = {}
 			rquery['cmd'] = 'DEF'
-			rquery['req'] = str(text)
+			rquery['req'] = text
 			rquery['opt'] = None
 			sig_res = backend.prj.qry.query(rquery)
 			sig_res[0].connect(self.code_ctx_view_query_res_cb)
@@ -1043,7 +1042,7 @@ class SeascopeApp(QMainWindow):
 		prj_path = None
 		args = QApplication.arguments()
 		if len(args) == 2:
-			prj_path = str(args[1])
+			prj_path = args[1]
 			if not os.path.isabs(prj_path):
 				dname = self.seascope_start_dir
 				prj_path = os.path.join(dname, prj_path)

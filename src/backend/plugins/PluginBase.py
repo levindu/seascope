@@ -338,11 +338,11 @@ class PluginProcessBase(QObject):
 		self._cleanup()
 
 	def _finished_cb(self, ret):
-		res = str(self.proc.readAllStandardOutput())
-		self.err_str = str(self.proc.readAllStandardError())
-		
-		#print 'output', res
-		#print 'cmd:', self.p_cmd
+		res = bytes(self.proc.readAllStandardOutput()).decode('utf-8')
+		self.err_str = bytes(self.proc.readAllStandardError()).decode('utf-8')
+		# print('output:', res)
+		# print('error:', self.err_str)
+		print('cmd:', self.p_cmd)
 		if self.is_rebuild:
 			self.res = res
 			self.sig.sig_rebuild.emit()
@@ -431,10 +431,10 @@ if __name__ == '__main__':
 	import sys
 
 	def slot_result(sym, res):
-		print('slot_result:    ', [str(sym), res])
+		print('slot_result:    ', [sym, res])
 		sys.exit(0)
 	def slot_result_dbg(cmd, res, err_str):
-		print('slot_result_dbg:', [str(cmd), str(res).strip().split('\n'), str(err_str)])
+		print('slot_result_dbg:', [cmd, res.strip().split('\n'), err_str])
 	def slot_rebuild():
 		print('slot_rebuild')
 

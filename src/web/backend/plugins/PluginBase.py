@@ -320,8 +320,8 @@ class PluginProcessBase:
 		try:
 			self.proc = subprocess.Popen(pargs, cwd=self.wdir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			(out_data, err_data) = self.proc.communicate()
-			self.outd['out_data'] = out_data
-			self.outd['err_data'] = err_data
+			self.outd['out_data'] = out_data.decode()
+			self.outd['err_data'] = err_data.decode()
 
 			#rc = self.proc.returncode
 			#if rc:
@@ -417,10 +417,10 @@ if __name__ == '__main__':
 	import sys
 
 	def slot_result(sym, res):
-		print('slot_result:    ', [str(sym), res])
+		print('slot_result:    ', [sym, res])
 		sys.exit(0)
 	def slot_result_dbg(cmd, res, err_str):
-		print('slot_result_dbg:', [str(cmd), str(res).strip().split('\n'), str(err_str)])
+		print('slot_result_dbg:', [cmd, res.strip().split('\n'), err_str])
 	def slot_rebuild():
 		print('slot_rebuild')
 

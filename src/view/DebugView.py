@@ -5,7 +5,6 @@
 
 import sys
 import os
-import string
 
 from PyQt4 import QtGui, QtCore, uic
 

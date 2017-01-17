@@ -47,7 +47,7 @@ class CscopeProjectSettingsDialog(QDialog):
 		fdlg.setDirectory(self.pd_path_inp.text())
 		if (fdlg.exec_()):
 			path_dir = fdlg.selectedFiles()[0];
-			self.pd_path_inp.setText(str(path_dir))
+			self.pd_path_inp.setText(path_dir)
 
 	def src_add_cb(self):
 		fdlg = QFileDialog(None, "Choose directory")
@@ -55,7 +55,6 @@ class CscopeProjectSettingsDialog(QDialog):
 		fdlg.setDirectory(self.pd_path_inp.text())
 		if (fdlg.exec_()):
 			d = fdlg.selectedFiles()[0];
-			d = str(d)
 			d = d.strip()
 			if (d == None):
 				return
@@ -75,7 +74,7 @@ class CscopeProjectSettingsDialog(QDialog):
 		self.pd_src_list.addItems(file_list)
 
 	def ok_btn_cb(self):
-		proj_dir = os.path.join(str(self.pd_path_inp.text()), str(self.pd_name_inp.text()))
+		proj_dir = os.path.join(self.pd_path_inp.text(), self.pd_name_inp.text())
 		proj_dir = os.path.normpath(proj_dir)
 		if (self.is_new_proj):
 			if (proj_dir == '' or not os.path.isabs(proj_dir)):
@@ -87,7 +86,7 @@ class CscopeProjectSettingsDialog(QDialog):
 		# File list
 		cs_list = []
 		for inx in range(self.pd_src_list.count()):
-			val = str(self.pd_src_list.item(inx).text())
+			val = self.pd_src_list.item(inx).text()
 			cs_list.append(val)
 		cs_list = list(set(cs_list))
 		# Cscope opt

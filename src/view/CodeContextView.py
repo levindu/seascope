@@ -54,7 +54,7 @@ class codeResultView(QTextBrowser):
 		self.res = res
 		richstr = '<div align="center">'
 		richstr += '<span style="font-size:10px;color:#990000;">Query of &lt; <strong><span style="color:#000099;">'
-		richstr += str(sym)
+		richstr += sym
 		richstr += '</span></strong></span> <span style="font-size:10px;color:#990000;"> &gt; list</span>'
 		richstr += '<div align="left" style="line-height:2px">'
 		richstr += '<hr />'
@@ -65,15 +65,15 @@ class codeResultView(QTextBrowser):
 			richstr += 'Line <span style="font-size:10px;color:#6600CC;">'
 			richstr += str(linenum)
 			richstr += '</span> of <em><a href="'
-			richstr += str(filename)
+			richstr += filename
 			richstr += '#'
 			richstr += str(linenum)
 			richstr += '">'
-			richstr += str(filename)
+			richstr += filename
 			richstr += '</a>'
 			richstr += '</span></span></em>'
 			richstr += '<pre style="line-height:0px"><span style="font-size:10px;color:#006600;line-height:2px;">'
-			richstr += str(context)
+			richstr += context
 			richstr += '</span></pre>'
 		richstr += '</div></div>'
 		#print richstr
@@ -84,7 +84,7 @@ class codeResultView(QTextBrowser):
 	def anchorClicked_ev(self, qurl):
 		urlstr = qurl.toString()
 		urlinfo = urlstr.split('#')
-		fname = str(urlinfo[0])
+		fname = urlinfo[0]
 		linen = int(urlinfo[1])
 		self.sig_result_view_openfile.emit(fname, int(linen))
 	

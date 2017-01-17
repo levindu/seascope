@@ -37,7 +37,7 @@ def ct_query(filename):
 	try:
 		proc = subprocess.Popen(args, stdout=subprocess.PIPE)
 		(out_data, err_data) = _eintr_retry_call(proc.communicate)
-		out_data = out_data.split('\n')
+		out_data = out_data.decode().split('\n')
 	except Exception as e:
 		out_data =  [
 				'Failed to run ctags cmd\tignore\t0;\t ',
@@ -96,7 +96,7 @@ class CtagsTreeBuilder:
 		# return output
 		proc = subprocess.Popen(args, stdout=subprocess.PIPE)
 		(out_data, err_data) = proc.communicate()
-		return out_data
+		return out_data.decode()
 
 	def parseCtagsOutput(self, data):
 		data = re.split('\r?\n', data)

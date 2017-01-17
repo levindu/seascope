@@ -5,7 +5,7 @@
 #
 # License: BSD 
 
-import os, string, re
+import os, re
 
 from ..PluginBase import PluginFeatureBase, ProjectBase, ConfigBase, QueryBase
 from ..PluginBase import PluginProcess

@@ -30,7 +30,6 @@ class ProjectSettingsDialog(QDialog):
 		#fdlg.setDirectory(self.pd_path_inp.text())
 		if fdlg.exec_():
 			d = fdlg.selectedFiles()[0];
-			d = str(d)
 			if not d:
 				return None
 			d = os.path.normpath(d)

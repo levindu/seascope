@@ -41,7 +41,7 @@ def ct_query(filename):
 	try:
 		proc = subprocess.Popen(args, stdout=subprocess.PIPE)
 		(out_data, err_data) = _eintr_retry_call(proc.communicate)
-		out_data = out_data.split('\n')
+		out_data = out_data.decode().split('\n')
 	except Exception as e:
 		out_data =  [
 				'Failed to run ctags cmd\tignore\t0;\t ',
@@ -86,7 +86,7 @@ class FFgraph:
 			(output, err_data) = proc.communicate()
 			#print 'cmd =', cmd
 			#print 'output =', output
-			res = self.parse_cs_result(output)
+			res = self.parse_cs_result(output.decode())
 			res = set([ e[0] for e in res ])
 		except Exception as e:
 			print('failed cmd:', cmd, ':', e, file=sys.stderr)
@@ -166,7 +166,8 @@ class FFgraph:
 		args = ['dot', '-Tsvg']
 		try:
 			p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-			(svg_data, err_data) = p.communicate(dotInput)
+			(svg_data, err_data) = p.communicate(dotInput.encode())
+			err_data = err_data.decode()
 			if err_data and err_data != '':
 				print(err_data, '\n', file=sys.stderr)
 			#self.saveSvgFile(sym, svg_data)
@@ -245,7 +246,7 @@ if __name__ == '__main__':
 	(options, args) = op.parse_args()
 
 	if (not any([options.code_dir, options.id_path]) or
-               all([options.code_dir, options.id_path])):
+	       all([options.code_dir, options.id_path])):
 		print('Specify one among -d or -p', file=sys.stderr)
 		sys.exit(-1)
 
@@ -264,7 +265,7 @@ if __name__ == '__main__':
 	if options.code_dir:
 		dname = options.code_dir
 		if not os.path.exists(dname):
-			print('"%s": does not exist' %  dname, file=sys.stderr)
+			print('"%s": does not exist' %	dname, file=sys.stderr)
 			sys.exit(-3)
 		svg_data = ff_graph(dname, is_extern=is_extern)
 	print(svg_data)
