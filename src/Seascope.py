@@ -363,15 +363,19 @@ class SeascopeApp(QMainWindow):
 
 	def file_preferences_cb(self):
 		ev_font = QFont()
-		ev_font.fromString(self.edit_book.ev_font)
+		if not self.ev_font:
+			ev_font.fromString(self.edit_book.ev_font)
+		else:
+			ev_font.fromString(self.ev_font)
 		res = DialogManager.show_preferences_dialog(self.app_style, self.edit_ext_cmd, ev_font, self.exit_dont_ask, self.inner_editing, self.eb_is_show_line)
 		(self.app_style, self.app_font, self.edit_ext_cmd, ev_font, self.exit_dont_ask, self.inner_editing_conf, self.eb_is_show_line) = res
 		if self.edit_ext_cmd != None:
 			self.edit_ext_cmd = self.edit_ext_cmd.strip()
 		if (self.edit_ext_cmd == None or self.edit_ext_cmd == ''):
 			self.edit_ext_cmd = 'x-terminal-emulator -e vim %F +%L'
-		self.edit_book.change_ev_font(ev_font.toString())
-		self.code_ctx_view.change_ev_font(ev_font.toString())
+		self.ev_font = ev_font.toString()
+		self.edit_book.change_ev_font(self.ev_font)
+		self.code_ctx_view.change_ev_font(self.ev_font)
 		self.edit_book.show_line_number_pref(self.eb_is_show_line)
 		self.app_write_config()
 
@@ -1026,6 +1030,9 @@ class SeascopeApp(QMainWindow):
 			font = QFont()
 			font.fromString(self.app_font)
 			QApplication.setFont(font)
+		if self.ev_font:
+			self.edit_book.change_ev_font(self.ev_font)
+			self.code_ctx_view.change_ev_font(self.ev_font)
 
 	def __init__(self, parent=None, app_start_dir=None):
 		QMainWindow.__init__(self)
